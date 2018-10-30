@@ -247,6 +247,34 @@ WHERE
         selectVars [s, o]
     )
 
+  , ( [s|
+PREFIX ex: <http://example.com/>
+
+SELECT ?x0 ?x1
+WHERE
+{
+  ?x0 ex:bar ?x1 .
+  ?x0 ex:foo "val" .
+}
+|]
+  , let
+      examplePrefix = prefix "ex" (iriRef "http://example.com/")
+      reusedQueryPart s = do
+        ex <- examplePrefix
+        triple_ s (ex .:. "foo") ("val" :: Text)
+    in createQuery $ do
+        ex <- examplePrefix
+
+        s <- var
+        o <- var
+
+        triple_ s (ex .:. "bar") o
+
+        reusedQueryPart s
+
+        selectVars [s, o]
+    )
+
   ]
 
 testSuite :: [Test.Framework.Test]

@@ -1109,7 +1109,7 @@ instance QueryShow [OrderBy] where
 
 instance QueryShow QueryData where
   qshow qd = query
-    where prefixDecl = qshow (prefixes qd)
+    where prefixDecl = qshow (L.nub $ prefixes qd)
           whereClause = unwords ["WHERE", qshow (pattern qd)]
           groupClause = qshow . groups $ qd
           -- TODO: HAVING clause
