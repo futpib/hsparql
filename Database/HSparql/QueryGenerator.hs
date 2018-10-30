@@ -971,10 +971,13 @@ instance QueryShow Variable where
 instance QueryShow [Variable] where
   qshow = unwords . fmap qshow
 
+escape :: String -> String
+escape = URI.escapeURIString URI.isUnescapedInURIComponent
+
 instance QueryShow IRIRef where
   qshow (AbsoluteIRI n) = qshow n
+  qshow (PrefixedName (Prefix _ (RDF.UNode pre)) s) = qshow $ iriRef $ T.append pre (T.pack $ escape $ T.unpack s)
   qshow (PrefixedName (Prefix pre _) s) = (T.unpack pre) ++ ":" ++ (escape $ T.unpack s)
-    where escape = URI.escapeURIString URI.isUnescapedInURIComponent
 
 instance QueryShow (Maybe IRIRef) where
   qshow (Just r) = qshow r
